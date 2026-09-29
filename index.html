@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Poin Member</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; padding: 16px; background: #f4f6f8; color: #222; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.12); max-width: 420px; margin: 0 auto; }
+  .toko { font-size: 20px; font-weight: bold; }
+  .label { font-size: 13px; color: #666; margin-top: 10px; }
+  .poin { font-size: 56px; font-weight: bold; color: #0b7a4b; line-height: 1.1; }
+</style>
+</head>
+<body>
+  <div class="card" id="info">Memuat...</div>
+
+<script>
+  // GANTI dengan URL Apps Script kamu (yang berakhiran /exec)
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwCWHpqYVmGYuYBsLP56tUjA0ZRrG7bZwlonNE9M4Quev8Yx6W68XYJBDIAfUhsM5UEBA/exec';
+
+  function el(x) { return document.getElementById(x); }
+  const params = new URLSearchParams(window.location.search);
+  const id = (params.get('id') || '').replace(/[^A-Za-z0-9_-]/g, '');
+
+  function tampil(d) {
+    const info = el('info');
+    info.textContent = '';
+    if (!d.ok) { info.textContent = d.pesan; return; }
+
+    const nama = document.createElement('div');
+    nama.className = 'toko';
+    nama.textContent = d.nama + ' (' + d.id + ')';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'label';
+    lbl.textContent = 'Total poin';
+
+    const poin = document.createElement('div');
+    poin.className = 'poin';
+    poin.textContent = d.total;
+
+    info.appendChild(nama);
+    info.appendChild(lbl);
+    info.appendChild(poin);
+  }
+
+  if (!id) {
+    el('info').textContent = 'Link tidak valid. Scan ulang QR member.';
+  } else {
+    fetch(API_URL + '?api=poin&id=' + encodeURIComponent(id))
+      .then(function (r) { return r.json(); })
+      .then(tampil)
+      .catch(function (e) { el('info').textContent = 'Gagal memuat data: ' + e.message; });
+  }
+</script>
+</body>
+</html>
